@@ -35,7 +35,7 @@ They shall be deployed using AWS Fargate, which allows you to run containers wit
 
 ![img2]
 
-[img2]:https://github.com/tohwsw/aws-ecs-workshop/blob/master/Lab2-Getting-Started-with-ECS/img/1-lab-architecture.png
+[img2]:https://github.com/tohwsw/aws-ecs-workshop/blob/master/Lab1-Getting-Started-with-ECS/img/1-lab-architecture.png
 
 **Note**: 
 You'll need to have a working AWS account to use this lab.
