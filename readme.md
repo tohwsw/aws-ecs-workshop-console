@@ -33,6 +33,8 @@ At the microservice level the application looks like this:
 
 They shall be deployed using AWS Fargate, which allows you to run containers without managing servers. We shall deploy two instances of Gateway container and 2 instances of ColorTeller. ColorTeller containers register with a Route53 private hosted zone. ColorGateway discovers the ColorTeller via a service lookup to Route53. We will use an Application load balancer to route the requests to ColorGateway.
 
+The lab architecture on AWS is shown below:
+
 ![img2]
 
 [img2]:https://github.com/tohwsw/aws-ecs-workshop/blob/master/Lab1-Getting-Started-with-ECS/img/1-lab-architecture.png
