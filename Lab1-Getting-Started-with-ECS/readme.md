@@ -121,11 +121,11 @@ Copy the content below and save it as **colorgateway.json**. Make sure to change
       "environment": [
         {
           "name": "COLOR_TELLER_ENDPOINT",
-          "value": "52.221.223.35:8080"
+          "value": "colorteller-service.ecslab"
         },
         {
           "name": "TCP_ECHO_ENDPOINT",
-          "value": "52.221.223.35:8080"
+          "value": "colorteller-service.ecslab"
         }
 
       ],
@@ -175,7 +175,7 @@ Next create colorgateway.json with the below content. Make sure to change the ar
         }
       ],
       "name": "colorteller",
-      "image": "284245693010.dkr.ecr.ap-southeast-1.amazonaws.com/colorgateway:latest",
+      "image": "284245693010.dkr.ecr.ap-southeast-1.amazonaws.com/colorteller:latest",
       "logConfiguration": {
         "logDriver": "awslogs",
         "options": {
