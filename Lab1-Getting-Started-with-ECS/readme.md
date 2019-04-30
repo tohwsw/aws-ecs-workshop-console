@@ -41,13 +41,13 @@ In the Create Role screen, enter **AmazonEC2ContainerServiceforEC2Role** **Amazo
 
 ![img2]
 
-[img2]:https://github.com/tohwsw/awsecslab/blob/master/Lab21-Getting-Started-with-ECS/img/1-ecslabinstanceprofile1.png
+[img2]:https://github.com/tohwsw/aws-ecs-workshop/blob/master/Lab1-Getting-Started-with-ECS/img/1-ecslabinstanceprofile1.png
 
 In the Review screen, enter **ecslabinstanceprofile** for the Role name and click **Create Role**.
 
 ![img3]
 
-[img3]:https://github.com/tohwsw/awsecslab/blob/master/Lab21-Getting-Started-with-ECS/img/1-ecsinstanceprofile2.png
+[img3]:https://github.com/tohwsw/aws-ecs-workshop/blob/master/Lab1-Getting-Started-with-ECS/img/1-ecsinstanceprofile2.png
 
 **Note**: By default, the ECS first run wizard creates **ecsInstanceRole** for you to use. However, it's a best practice to create a specific role for your use so that we can add more policies in the future when we need to.
 
@@ -72,11 +72,11 @@ In the next screen, configure the cluster as follows:
 
 ![img4]
 
-[img4]:https://github.com/tohwsw/awsecslab/blob/master/Lab21-Getting-Started-with-ECS/img/1-ecslabpubliccluster.png
+[img4]:https://github.com/tohwsw/aws-ecs-workshop/blob/master/Lab1-Getting-Started-with-ECS/img/1-ecslabpubliccluster.png
 
 ![img5]
 
-[img5]:https://github.com/tohwsw/awsecslab/blob/master/Lab21-Getting-Started-with-ECS/img/1-ecslabpubliccluster2.png
+[img5]:https://github.com/tohwsw/aws-ecs-workshop/blob/master/Lab1-Getting-Started-with-ECS/img/1-ecslabpubliccluster2.png
 
 Click Create. It will take a few minutes to create the cluster.
 
@@ -98,20 +98,20 @@ Choose **Elastic Container Service** and then **Elastic Container Service Task**
 
 ![img6]
 
-[img6]:https://github.com/tohwsw/awsecslab/blob/master/Lab21-Getting-Started-with-ECS/img/1-taskexecutionrole.png
+[img6]:https://github.com/tohwsw/aws-ecs-workshop/blob/master/Lab1-Getting-Started-with-ECS/img/1-taskexecutionrole.png
 
 Next click on **Permissions** and then select **AmazonECSTaskExecutionRolePolicy**
 
 ![img7]
 
-[img7]:https://github.com/tohwsw/awsecslab/blob/master/Lab21-Getting-Started-with-ECS/img/1-taskexecutionrole2.png
+[img7]:https://github.com/tohwsw/aws-ecs-workshop/blob/master/Lab1-Getting-Started-with-ECS/img/1-taskexecutionrole2.png
 
 Name the role **ecsTaskExecutionRole**
 
 ## 6. Create the Task Definitions
 
 On your laptop, we will use the AWS CLI to create ECS task definitions.
-Copy the content below and save it as **wordpress.json**. Make sure to change the arn **arn:aws:iam::284245693010:role/ecsTaskExecutionRole** of **ecsTaskExecutionRole** to your own.
+Copy the content below and save it as **colorgateway.json**. Make sure to change the arn **arn:aws:iam::284245693010:role/ecsTaskExecutionRole** of **ecsTaskExecutionRole** to your own.
 
 ```
     {
@@ -120,16 +120,17 @@ Copy the content below and save it as **wordpress.json**. Make sure to change th
     {
       "environment": [
         {
-          "name": "WORDPRESS_DB_HOST",
-          "value": "mysql-service.ecslab"
+          "name": "COLOR_TELLER_ENDPOINT",
+          "value": "52.221.223.35:8080"
         },
         {
-          "name": "WORDPRESS_DB_PASSWORD",
-          "value": "password"
+          "name": "TCP_ECHO_ENDPOINT",
+          "value": "52.221.223.35:8080"
         }
+
       ],
-      "name": "wordpress",
-      "image": "wordpress:4.6",
+      "name": "colorgateway",
+      "image": "284245693010.dkr.ecr.ap-southeast-1.amazonaws.com/colorgateway:latest",
       "memory": 512,
       "cpu": 256,
       "logConfiguration": {
@@ -137,19 +138,19 @@ Copy the content below and save it as **wordpress.json**. Make sure to change th
         "options": {
           "awslogs-group": "/ecs/fargate",
           "awslogs-region": "ap-southeast-1",
-          "awslogs-stream-prefix": "wordpress"
+          "awslogs-stream-prefix": "colorgateway"
         }
       },
       "essential": true,
       "portMappings": [
         {
-          "containerPort": 80,
-          "hostPort": 80
+          "containerPort": 8080,
+          "hostPort": 8080
         }
       ]
     }
   ],
-  "family": "wordpress_fargate_task",
+  "family": "colorgateway_fargate_task",
   "networkMode": "awsvpc",
   "requiresCompatibilities": [
     "FARGATE"
@@ -159,7 +160,7 @@ Copy the content below and save it as **wordpress.json**. Make sure to change th
 }
 ```
     
-Next create mysql.json with the below content. Make sure to change the arn **arn:aws:iam::284245693010:role/ecsTaskExecutionRole** of **ecsTaskExecutionRole** to your own.
+Next create colorgateway.json with the below content. Make sure to change the arn **arn:aws:iam::284245693010:role/ecsTaskExecutionRole** of **ecsTaskExecutionRole** to your own.
 
 
 ```
@@ -169,18 +170,18 @@ Next create mysql.json with the below content. Make sure to change the arn **arn
     {
       "environment": [
         {
-          "name": "MYSQL_ROOT_PASSWORD",
-          "value": "password"
+          "name": "COLOR",
+          "value": "blue"
         }
       ],
-      "name": "mysql",
-      "image": "mysql:5.7",
+      "name": "colorteller",
+      "image": "284245693010.dkr.ecr.ap-southeast-1.amazonaws.com/colorgateway:latest",
       "logConfiguration": {
         "logDriver": "awslogs",
         "options": {
           "awslogs-group": "/ecs/fargate",
           "awslogs-region": "ap-southeast-1",
-          "awslogs-stream-prefix": "mysql"
+          "awslogs-stream-prefix": "colorteller"
         }
       },
       "memory": 512,
@@ -188,13 +189,13 @@ Next create mysql.json with the below content. Make sure to change the arn **arn
       "essential": true,
       "portMappings": [
         {
-          "containerPort": 3306,
-          "hostPort": 3306
+          "containerPort": 8080,
+          "hostPort": 8080
         }
       ]
     }
   ],
-  "family": "mysql_fargate_task",
+  "family": "colorteller_fargate_task",
   "memory": "512",
   "cpu": "256",
   "networkMode": "awsvpc",
@@ -204,11 +205,11 @@ Next create mysql.json with the below content. Make sure to change the arn **arn
 }
 ```
 
-Next register the task definitions with ECS. You have to run the commands in the folder containing wordpress.json and mysql.json
+Next register the task definitions with ECS. You have to run the commands in the folder containing colorteller.json and colorgateway.json
 
-    $aws ecs register-task-definition --cli-input-json file://wordpress.json
+    $aws ecs register-task-definition --cli-input-json file://colorgateway.json
     
-    $aws ecs register-task-definition --cli-input-json file://mysql.json
+    $aws ecs register-task-definition --cli-input-json file://colorteller.json
     
     $aws ecs list-task-definitions
 
@@ -216,13 +217,13 @@ Next, create the CloudWatch log group **/ecs/fargate**. Go to [CloudWatch Consol
 
 ![img8]
 
-[img8]:https://github.com/tohwsw/awsecslab/blob/master/Lab21-Getting-Started-with-ECS/img/1-cloudwatch.png
+[img8]:https://github.com/tohwsw/aws-ecs-workshop/blob/master/Lab1-Getting-Started-with-ECS/img/1-cloudwatch.png
 
 Give the log group name **/ecs/fargate**
 
 ![img9]
 
-[img9]:https://github.com/tohwsw/awsecslab/blob/master/Lab21-Getting-Started-with-ECS/img/1-cloudwatch2.png
+[img9]:https://github.com/tohwsw/aws-ecs-workshop/blob/master/Lab1-Getting-Started-with-ECS/img/1-cloudwatch2.png
 
 ## That's a wrap!
 
