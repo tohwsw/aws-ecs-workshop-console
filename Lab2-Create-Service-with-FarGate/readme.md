@@ -221,7 +221,11 @@ Next configure the network by selecting the VPC and the 2 subnets.
 
 ![img16]
 
-[img16]:https://github.com/tohwsw/awsecslab/blob/master/Lab22-Create-WordPress-with-FarGate/img/2-colorgw4.png
+[img16]:https://github.com/tohwsw/aws-ecs-workshop/blob/master/Lab2-Create-Service-with-FarGate/img/2-colorgw4.png
+
+Add 8080 to the colorg-XXX security group.
+
+[img166]:https://github.com/tohwsw/aws-ecs-workshop/blob/master/Lab2-Create-Service-with-FarGate/img/2-colorgw41.png
 
 Choose the Load Balancing option as **Application Load Balancer** For Load Balancer name, choose **EcsLabAlb**. Click Add to load balancer.
 
@@ -264,11 +268,11 @@ Go to [CloudWatch Console](https://console.aws.amazon.com/cloudwatch/home) to vi
 ## 11. Testing our service deployments from the console and the ALB
   
 
-We can also test from the ALB itself. To find the DNS A record for your ALB, navigate to the EC2 Console -> **Load Balancers** -> **Select your Load Balancer**. Under **Description**, you can find details about your ALB, including a section for **DNS Name**. You can enter this value in your browser, and append the endpoint of your service, to see your ALB and ECS Cluster in action:
+We can also test from the ALB itself. To find the DNS A record for your ALB, navigate to the EC2 Console -> **Load Balancers** -> **Select your Load Balancer**. Under **Description**, you can find details about your ALB, including a section for **DNS Name**. You can enter this value in your browser, and append the endpoint of your service, to see your ALB and ECS Cluster in action.You should be able to see the following output in the browser.
 
-![img25]
-
-[img25]:https://github.com/tohwsw/aws-ecs-workshop/blob/master/Lab2-Create-Service-with-FarGate/img/2-colorgw11.png
+```
+{"color":"blue", "stats": {"blue":1}}
+```
 
 ## That's a wrap!
 
