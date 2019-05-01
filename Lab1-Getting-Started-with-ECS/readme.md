@@ -164,11 +164,11 @@ Copy the content below and save it as **colorgateway.json**. Make sure to change
       "environment": [
         {
           "name": "COLOR_TELLER_ENDPOINT",
-          "value": "colorteller-service.ecslab"
+          "value": "colorteller-service.ecslab:8080"
         },
         {
           "name": "TCP_ECHO_ENDPOINT",
-          "value": "colorteller-service.ecslab"
+          "value": "colorteller-service.ecslab:8080"
         }
 
       ],
@@ -203,7 +203,7 @@ Copy the content below and save it as **colorgateway.json**. Make sure to change
 }
 ```
     
-Next create **colorteller.json** with the below content. Make sure to change the arn **arn:aws:iam::284245693010:role/ecsTaskExecutionRole** of **ecsTaskExecutionRole** to your own.
+Next create **colorteller.json** with the below content. Notice that the environment variable "color" is "blue". Make sure to change the arn **arn:aws:iam::284245693010:role/ecsTaskExecutionRole** of **ecsTaskExecutionRole** to your own.
 
 
 ```
