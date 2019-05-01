@@ -225,6 +225,8 @@ Next configure the network by selecting the VPC and the 2 subnets.
 
 Add 8080 to the colorg-XXX security group.
 
+![img166]
+
 [img166]:https://github.com/tohwsw/aws-ecs-workshop/blob/master/Lab2-Create-Service-with-FarGate/img/2-colorgw41.png
 
 Choose the Load Balancing option as **Application Load Balancer** For Load Balancer name, choose **EcsLabAlb**. Click Add to load balancer.
