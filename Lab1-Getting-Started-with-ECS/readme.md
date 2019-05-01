@@ -80,9 +80,23 @@ In the next screen, configure the cluster as follows:
 
 Click Create. It will take a few minutes to create the cluster.
 
-## 4. Configuring the AWS CLI
+## 4. Create the ECR repositories
 
-On your laptop, we will use the AWS CLI to create ECS tasks. If AWS CLI has yet to be installed, please bring up a Cloud9 instance by going to https://ap-southeast-1.console.aws.amazon.com/cloud9/home/product. Cloud9 will provide you terminal access to run AWS CLI.
+
+
+
+## 4. Configuring the AWS CLI and Docker Images
+
+Please bring up a Cloud9 instance by going to https://ap-southeast-1.console.aws.amazon.com/cloud9/home/product. Cloud9 will provide you terminal access to run AWS CLI.
+
+In the terminal of Cloud9, clone the code
+
+```
+git clone https://github.com/tohwsw/aws-app-mesh-examples.git
+
+```
+
+
 
 ## 5. Create the Task Execution IAM role
 

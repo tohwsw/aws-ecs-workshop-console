@@ -133,13 +133,13 @@ The **ecsCodeDeployRole** should look like the below.
 
 [img111]: https://github.com/tohwsw/awsecslab/blob/master/Lab23-BlueGreen-Deployment-with-CodeDeploy/img/3-IAMrole.png
 
-## 9. Create the MySQL Service
+## 9. Create the ColorTeller Service
 
 After you have registered a task for your account, you can create a service for the registered task in your cluster. For this example, we will create a service.
 
 Open the ECS dashboard
 
-Choose the mySQL web Task Definition you created in the previous section. Choose Actions -> Create Service.
+Choose the colorteller web Task Definition you created in the previous section. Choose Actions -> Create Service.
 
 ![img5]
 
@@ -192,16 +192,16 @@ Go to [CloudWatch Console](https://console.aws.amazon.com/cloudwatch/home) to vi
 
 [img11]:https://github.com/tohwsw/awsecslab/blob/master/Lab22-Create-WordPress-with-FarGate/img/2-mysql7.png
 
-Go to [Route53 Console](https://console.aws.amazon.com/route53/home) to view the **mysql-service.ecslab** entry in the private DNS host.
+Go to [Route53 Console](https://console.aws.amazon.com/route53/home) to view the **colorteller-service.ecslab** entry in the private DNS host.
 
 ![img12]
 
 [img12]:https://github.com/tohwsw/awsecslab/blob/master/Lab22-Create-WordPress-with-FarGate/img/2-route53.png
 
-## 10. Create the WordPress Service
+## 10. Create the ColorGateway Service
 
 We will use the Task Definition created earlier to create the ECS service.
-Choose the WordPress Task Definition you created in the previous section. Choose Actions > Create Service.
+Choose the ColorGateway Task Definition you created in the previous section. Choose Actions > Create Service.
 
 ![img13]
 
@@ -260,17 +260,8 @@ Go to [CloudWatch Console](https://console.aws.amazon.com/cloudwatch/home) to vi
 
 [img22]:https://github.com/tohwsw/awsecslab/blob/master/Lab22-Create-WordPress-with-FarGate/img/2-wordpress10.png
 
-Wordpress performs a redirect at first run and the return code is 302.
-
-Go to the [EC2 Console](https://console.aws.amazon.com/ec2/home) to add the Success code of 302 to the tg-EcsLab-wordpress-service-1 and tg-EcsLab-wordpress-service-2view the logs under the log group **/ecs/fargate** to add the Success code of 302 to the target group’s' health check. If this is not done, the ECS task will keep restarting.
-
-![img23]
-
-[img23]:https://github.com/tohwsw/awsecslab/blob/master/Lab22-Create-WordPress-with-FarGate/img/2-healthcheck.png
 
 ## 11. Testing our service deployments from the console and the ALB
-
-  
   
 
 We can also test from the ALB itself. To find the DNS A record for your ALB, navigate to the EC2 Console -> **Load Balancers** -> **Select your Load Balancer**. Under **Description**, you can find details about your ALB, including a section for **DNS Name**. You can enter this value in your browser, and append the endpoint of your service, to see your ALB and ECS Cluster in action:
