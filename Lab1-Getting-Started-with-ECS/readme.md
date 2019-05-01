@@ -80,20 +80,49 @@ In the next screen, configure the cluster as follows:
 
 Click Create. It will take a few minutes to create the cluster.
 
-## 4. Create the ECR repositories
 
 
 
-
-## 4. Configuring the AWS CLI and Docker Images
+## 4. Using Cloud9 to build and push Docker Images to ECR
 
 Please bring up a Cloud9 instance by going to https://ap-southeast-1.console.aws.amazon.com/cloud9/home/product. Cloud9 will provide you terminal access to run AWS CLI.
+
+First create the ECR repositories for the 2 applications.
+
+```
+aws ecr create-repository --repository-name colorteller
+
+aws ecr create-repository --repository-name colorgateway
+
+```
 
 In the terminal of Cloud9, clone the code
 
 ```
 git clone https://github.com/tohwsw/aws-app-mesh-examples.git
 
+```
+
+Retrieve the login command to use to authenticate your Docker client to your registry.
+
+```
+$(aws ecr get-login --no-include-email --region ap-southeast-1)
+```
+
+Go to the folder examples/apps/colorapp/src/colorteller. Execute a docker build with the respective repository uri for colorteller and push it to the repository.
+
+```
+docker build -t 284245693010.dkr.ecr.ap-southeast-1.amazonaws.com/colorteller .
+
+docker push 284245693010.dkr.ecr.ap-southeast-1.amazonaws.com/colorteller:latest
+```
+
+Go to the folder examples/apps/colorapp/src/gateway. Execute a docker build with the respective repository uri for colorgateway and push it to the repository.
+
+```
+docker build -t 284245693010.dkr.ecr.ap-southeast-1.amazonaws.com/colorgateway .
+
+docker push 284245693010.dkr.ecr.ap-southeast-1.amazonaws.com/colorgateway:latest
 ```
 
 
@@ -174,7 +203,7 @@ Copy the content below and save it as **colorgateway.json**. Make sure to change
 }
 ```
     
-Next create colorgateway.json with the below content. Make sure to change the arn **arn:aws:iam::284245693010:role/ecsTaskExecutionRole** of **ecsTaskExecutionRole** to your own.
+Next create **colorteller.json** with the below content. Make sure to change the arn **arn:aws:iam::284245693010:role/ecsTaskExecutionRole** of **ecsTaskExecutionRole** to your own.
 
 
 ```
