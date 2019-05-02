@@ -131,7 +131,7 @@ The **ecsCodeDeployRole** should look like the below.
 
 ![img111]
 
-[img111]: https://github.com/tohwsw/aws-ecs-workshop/blob/master/Lab2-Create-Service-with-FarGate/img/3-IAMrole.png
+[img111]: https://github.com/tohwsw/aws-ecs-workshop/blob/master/Lab3-BlueGreen-Deployment-with-CodeDeploy/img/3-IAMrole.png
 
 ## 9. Create the ColorTeller Service
 
