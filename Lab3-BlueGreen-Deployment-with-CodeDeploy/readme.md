@@ -6,63 +6,60 @@ In [AWS CodeDeploy](https://aws.amazon.com/codedeploy/), blue/green deployments 
 
 With this new capability, you can create a new service in AWS Fargate or Amazon ECS that uses CodeDeploy to manage the deployments, testing, and traffic cutover for you. When you make updates to your service, CodeDeploy triggers a deployment. This deployment, in coordination with Amazon ECS, deploys the new version of your service to the green target group, updates the listeners on your load balancer to allow you to test this new version, and performs the cutover if the health checks pass.
 
-## 12. Create a new Task Definition for Wordpress
+## 12. Create a new Task Definition for ColorTeller
 
-On your laptop, we will use the AWS CLI to create a new task definition for Wordpress. This updates the Wordpress image from 4.6 to 4.7 so that we can update the ECS service.
+On your laptop, we will use the AWS CLI to create a new task definition for colorteller. This updates the colorteller image to output the color "green".
 
-Copy the content below and save it as **wordpress2.json**. Make sure to change the arn **arn:aws:iam::284245693010:role/ecsTaskExecutionRole** of **ecsTaskExecutionRole** to your own. The arn can be found in the role on the IAM console.
+Copy the content below and save it as **colorteller2.json**. Make sure to change the arn **arn:aws:iam::284245693010:role/ecsTaskExecutionRole** of **ecsTaskExecutionRole** to your own. The arn can be found in the role on the IAM console.
 
 ```
-   {
+{
   "executionRoleArn": "arn:aws:iam::284245693010:role/ecsTaskExecutionRole",
   "containerDefinitions": [
     {
       "environment": [
         {
-          "name": "WORDPRESS_DB_HOST",
-          "value": "mysql-service.ecslab"
-        },
-        {
-          "name": "WORDPRESS_DB_PASSWORD",
-          "value": "password"
+          "name": "COLOR",
+          "value": "green"
         }
       ],
-      "name": "wordpress",
-      "image": "wordpress:4.7",
-      "memory": 512,
-      "cpu": 256,
+      "name": "colorteller",
+      "image": "284245693010.dkr.ecr.ap-southeast-1.amazonaws.com/colorteller:latest",
       "logConfiguration": {
         "logDriver": "awslogs",
         "options": {
           "awslogs-group": "/ecs/fargate",
           "awslogs-region": "ap-southeast-1",
-          "awslogs-stream-prefix": "wordpress"
+          "awslogs-stream-prefix": "colorteller"
         }
       },
+      "memory": 512,
+      "cpu": 256,
       "essential": true,
       "portMappings": [
         {
-          "containerPort": 80,
-          "hostPort": 80
+          "containerPort": 8080,
+          "hostPort": 8080
         }
       ]
     }
   ],
-  "family": "wordpress_fargate_task",
+  "family": "colorteller_fargate_task",
+  "memory": "512",
+  "cpu": "256",
   "networkMode": "awsvpc",
   "requiresCompatibilities": [
     "FARGATE"
-  ],
-  "memory": "512",
-  "cpu": "256"
+  ]
 }
+
 ```
 
-Next register the task definitions with ECS. Make sure to run the command in the folder container **wordpress2.json**.
+Next register the task definitions with ECS. Make sure to run the command in the folder container **colorteller2.json**.
 
   
 
-    $aws ecs register-task-definition --cli-input-json file://wordpress2.json
+    $aws ecs register-task-definition --cli-input-json file://colorteller2.json
 
 
 
@@ -75,7 +72,7 @@ You now need to update your Amazon ECS service to use the latest revision of you
     
 2.  Choose the Amazon ECS cluster where you’ve deployed your Amazon ECS service.
     
-3.  Select the check box next to your **wordpress-service** service.
+3.  Select the check box next to your **colorteller-service** service.
     
 4.  Choose **Update** to open the **Update Service** wizard.
     
@@ -93,10 +90,6 @@ You now need to update your Amazon ECS service to use the latest revision of you
 10.  Choose **View Service**.
 
 You are now be taken to the Deployments tab of your service where you can see details about your blue/green deployment.
-
-![img2]
-
-[img2]: https://github.com/tohwsw/awsecslab/blob/master/Lab23-BlueGreen-Deployment-with-CodeDeploy/img/3-deployment.png
 
 You can click the deployment ID to go to the details view for the CodeDeploy deployment.
 
@@ -125,6 +118,8 @@ Congrats! You have achieved blue-green deployment with ECS service.
 - If you stop and start the MySQL service in the lab, the table data will be lost. Why is that so? How do you persist the data in ECS?
 
 - Compare the time for deployment for a new application version for ECS vs Elastic Beanstalk. Which is faster? What is that so?
+
+- If you have 2 colorteller tasks (blue and green) running at the same time, how would you implement traffic control so that the blue task gets 80% of the traffic and the green gets 20%?
 
 ## Lab Clean Up
 
