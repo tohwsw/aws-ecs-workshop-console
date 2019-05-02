@@ -270,7 +270,7 @@ Go to [CloudWatch Console](https://console.aws.amazon.com/cloudwatch/home) to vi
 ## 11. Testing our service deployments from the console and the ALB
   
 
-We can also test from the ALB itself. To find the DNS A record for your ALB, navigate to the EC2 Console -> **Load Balancers** -> **Select your Load Balancer**. Under **Description**, you can find details about your ALB, including a section for **DNS Name**. You can enter this value in your browser, and append the endpoint of your service, to see your ALB and ECS Cluster in action.You should be able to see the following output in the browser.
+We can also test from the ALB itself. To find the DNS A record for your ALB, navigate to the EC2 Console -> **Load Balancers** -> **Select your Load Balancer**. Under **Description**, you can find details about your ALB, including a section for **DNS Name**. You can enter this value in your browser, and append the endpoint of your service, to see your ALB and ECS Cluster in action.You should be able to see the following output in the browser. For example http://ecslabalb-1194182192.ap-southeast-1.elb.amazonaws.com/color
 
 ```
 {"color":"blue", "stats": {"blue":1}}
