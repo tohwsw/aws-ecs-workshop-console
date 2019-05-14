@@ -112,6 +112,8 @@ $(aws ecr get-login --no-include-email --region ap-southeast-1)
 Go to the folder examples/apps/colorapp/src/colorteller. Execute a docker build with the respective repository uri for colorteller and push it to the repository.
 
 ```
+cd ~/environment/aws-app-mesh-examples/examples/apps/colorapp/src/colorteller
+
 docker build -t 284245693010.dkr.ecr.ap-southeast-1.amazonaws.com/colorteller .
 
 docker push 284245693010.dkr.ecr.ap-southeast-1.amazonaws.com/colorteller:latest
@@ -120,6 +122,8 @@ docker push 284245693010.dkr.ecr.ap-southeast-1.amazonaws.com/colorteller:latest
 Go to the folder examples/apps/colorapp/src/gateway. Execute a docker build with the respective repository uri for colorgateway and push it to the repository.
 
 ```
+cd ~/environment/aws-app-mesh-examples/examples/apps/colorapp/src/gateway
+
 docker build -t 284245693010.dkr.ecr.ap-southeast-1.amazonaws.com/colorgateway .
 
 docker push 284245693010.dkr.ecr.ap-southeast-1.amazonaws.com/colorgateway:latest
