@@ -3,7 +3,9 @@ Lab 2 will build on Lab 1.
 
 ## 7. Creating the ALB
 
-We need an Application Load Balancer [ALB](https://aws.amazon.com/elasticloadbalancing/applicationloadbalancer/) to route traffic to our endpoints. An ALB lets you direct traffic between different endpoints and in this lab, we'll use it to direct traffic to the containers.
+**External ALB**
+
+We need an Application Load Balancer [ALB](https://aws.amazon.com/elasticloadbalancing/applicationloadbalancer/) to route traffic to our ColorGateway endpoints. An ALB lets you direct traffic between different endpoints and in this lab, we'll use it to direct traffic to the containers.
 
 To create the ALB, navigate to the [EC2 Console](https://console.aws.amazon.com/ec2/v2/home?#LoadBalancers:sort=loadBalancerName), and select **Load Balancers** from the left-hand menu. Choose **Create Load Balancer**. Create an Application Load Balancer:
 
@@ -23,7 +25,7 @@ Next, select your VPC and we need at least two subnets for high availability. Ma
 
 ![img3]
 
-[img3]:https://github.com/tohwsw/aws-ecs-workshop/blob/master/Lab2-Create-Service-with-FarGate/img/2-LoadBalancer3.png
+[img3]:https://github.com/tohwsw/aws-ecs-workshop/blob/master/Lab2-Create-Service-with-FarGate/img/albaz.png
 
 Click **Next**, and create a new security group (sgecslabloadbalancer) with the following rule:
 
@@ -39,9 +41,41 @@ Continue to the next step: **Configure Routing**. For this initial setup, we're 
 
 Click through the "Next:Register targets" step, and continue to the **Review** step. If your values look correct, click **Create**.
 
+**Internal ALB**
+
+We create another internal Application Load Balancer [ALB](https://aws.amazon.com/elasticloadbalancing/applicationloadbalancer/) to route traffic the ColorTeller endpoints.
+
+To create the ALB, navigate to the [EC2 Console](https://console.aws.amazon.com/ec2/v2/home?#LoadBalancers:sort=loadBalancerName), and select **Load Balancers** from the left-hand menu. Choose **Create Load Balancer**. Create an Application Load Balancer:
+
+![img111]
+
+[img111]:https://github.com/tohwsw/aws-ecs-workshop/blob/master/Lab2-Create-Service-with-FarGate/img/2-LoadBalancer.png
+
+Name your ALB **EcsLabAlbInternal** and add an HTTP listener on port 80:
+
+![img222]
+
+[img222]:https://github.com/tohwsw/aws-ecs-workshop/blob/master/Lab2-Create-Service-with-FarGate/img/ecslabalbinternal.png
+
+Next, select your VPC and we need at least two subnets for high availability. Make sure to choose the VPC that was used in Lab 1.
+
+![img333]
+
+[img333]:https://github.com/tohwsw/aws-ecs-workshop/blob/master/Lab2-Create-Service-with-FarGate/img/albaz.png
+
+Click **Next**, and choose **sgecslabloadbalancer** security group.
+
+Continue to the next step: **Configure Routing**. For this initial setup, we're just adding a dummy health check on /. We'll add specific health checks for our service endpoints when we register them with the ALB.
+
+![img444]
+
+[img444]:https://github.com/tohwsw/aws-ecs-workshop/blob/master/Lab2-Create-Service-with-FarGate/img/ecslabalbinternalrouting.png
+
+Click through the "Next:Register targets" step, and continue to the **Review** step. If your values look correct, click **Create**.
+
+
 ## 8. Set up IAM service roles
 
-  
 
 Because you will be using AWS CodeDeploy to handle the deployments of your application to Amazon ECS, AWS CodeDeploy needs permissions to call Amazon ECS APIs, modify your load balancers, invoke Lambda functions, and describe CloudWatch alarms. Before you create an Amazon ECS service that uses the blue/green deployment type, you must create the AWS CodeDeploy IAM role (**ecsCodeDeployRole**).
 
@@ -151,9 +185,9 @@ Configure the service to be Fargate as follows:
 
 [img6]:https://github.com/tohwsw/aws-ecs-workshop/blob/master/Lab2-Create-Service-with-FarGate/img/2-colorteller2.png
 
-![img66]
+![img666]
 
-[img66]:https://github.com/tohwsw/aws-ecs-workshop/blob/master/Lab2-Create-Service-with-FarGate/img/2-rollingupgrade.png
+[img666]:https://github.com/tohwsw/aws-ecs-workshop/blob/master/Lab2-Create-Service-with-FarGate/img/2-wordpress3.png
 
 Next configure the network by selecting the VPC and the 2 subnets.
 
@@ -167,7 +201,20 @@ Click on the colort--XXX security group to add a new rule for colorteller at por
 
 [img8]:https://github.com/tohwsw/aws-ecs-workshop/blob/master/Lab2-Create-Service-with-FarGate/img/2-colorteller4.png
 
-Leave the Load Balancing option as **None**.
+Choose the Load Balancing option as **Application Load Balancer** For Load Balancer name, choose **EcsLabAlbInternal**. Click Add to load balancer.
+
+![img17]
+
+[img17]:https://github.com/tohwsw/aws-ecs-workshop/blob/master/Lab2-Create-Service-with-FarGate/img/colortelleralb.png
+
+![img18]
+
+[img18]:https://github.com/tohwsw/aws-ecs-workshop/blob/master/Lab2-Create-Service-with-FarGate/img/colortelleralb2.png
+
+![img19]
+
+[img19]:https://github.com/tohwsw/aws-ecs-workshop/blob/master/Lab2-Create-Service-with-FarGate/img/colortelleralb3.png
+
 
 On the Service Discovery section, enter the namespace as **ecslab**.
 

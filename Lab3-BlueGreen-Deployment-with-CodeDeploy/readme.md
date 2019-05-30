@@ -129,13 +129,8 @@ Go to ECS console to delete **EcsLabPublicCluster**
 
 Go to CloudFormation console to delete the **ecsworkshopstack** stack.
 
-Remove the private hosted zone in Route53.
-```
-$ aws servicediscovery list-services
-$ aws servicediscovery delete-service --id <service id>
-$ aws servicediscovery list-namespaces
-$ aws servicediscovery delete-namespace --id <namespace id>
-```
+Remove the ecslab namespace in Cloud Map.
+
 Remove the roles created in IAM
 - ecslabinstanceprofile
 - ecstaskexecutionrole
@@ -145,7 +140,7 @@ Delete the **sgecslabpubliccluster** security group
 
 Delete the code deploy application
 
-Delete the ELB **EcsAlbLab** and the target groups.
+Delete the ALB **EcsAlbLab** and **EcsAlbLabInternal** and the target groups.
 
 
 > Written with [StackEdit](https://stackedit.io/).

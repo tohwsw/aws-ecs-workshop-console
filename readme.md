@@ -1,151 +1,335 @@
-## Overview
 
-Lab 3 will build on Lab 2. In this lab, we shall use AWS CodeDeploy to implement Blue/Green Deployments for AWS Fargate and Amazon ECS.
+Lab 2 will build on Lab 1.
 
-In [AWS CodeDeploy](https://aws.amazon.com/codedeploy/), blue/green deployments help you minimize downtime during application updates. They allow you to launch a new version of your application alongside the old version and test the new version before you reroute traffic to it. You can also monitor the deployment process and, if there is an issue, quickly roll back.
+## 7. Creating the ALB
 
-With this new capability, you can create a new service in AWS Fargate or Amazon ECS that uses CodeDeploy to manage the deployments, testing, and traffic cutover for you. When you make updates to your service, CodeDeploy triggers a deployment. This deployment, in coordination with Amazon ECS, deploys the new version of your service to the green target group, updates the listeners on your load balancer to allow you to test this new version, and performs the cutover if the health checks pass.
+**External ALB**
 
-## 12. Create a new Task Definition for ColorTeller
+We need an Application Load Balancer [ALB](https://aws.amazon.com/elasticloadbalancing/applicationloadbalancer/) to route traffic to our ColorGateway endpoints. An ALB lets you direct traffic between different endpoints and in this lab, we'll use it to direct traffic to the containers.
 
-On your laptop, we will use the AWS CLI to create a new task definition for colorteller. This updates the colorteller image to output the color "green".
+To create the ALB, navigate to the [EC2 Console](https://console.aws.amazon.com/ec2/v2/home?#LoadBalancers:sort=loadBalancerName), and select **Load Balancers** from the left-hand menu. Choose **Create Load Balancer**. Create an Application Load Balancer:
 
-Copy the content below and save it as **colorteller2.json**. Make sure to change the arn **arn:aws:iam::284245693010:role/ecsTaskExecutionRole** of **ecsTaskExecutionRole** to your own. The arn can be found in the role on the IAM console.
+![img1]
 
+[img1]:https://github.com/tohwsw/aws-ecs-workshop/blob/master/Lab2-Create-Service-with-FarGate/img/2-LoadBalancer.png
+
+Name your ALB **EcsLabAlb** and add an HTTP listener on port 80:
+
+![img2]
+
+[img2]:https://github.com/tohwsw/aws-ecs-workshop/blob/master/Lab2-Create-Service-with-FarGate/img/2-LoadBalancer2.png
+
+**Note**: in a production environment, you should also have a secure listener on port 443. This will require an SSL certificate, which can be obtained from [AWS Certificate Manager](https://aws.amazon.com/certificate-manager/), or from your registrar/CA. For the purposes of this lab, we will only create the insecure HTTP listener. DO NOT RUN THIS IN PRODUCTION.
+
+Next, select your VPC and we need at least two subnets for high availability. Make sure to choose the VPC that was used in Lab 1.
+
+![img3]
+
+[img3]:https://github.com/tohwsw/aws-ecs-workshop/blob/master/Lab2-Create-Service-with-FarGate/img/albaz.png
+
+Click **Next**, and create a new security group (sgecslabloadbalancer) with the following rule:
+
+|Ports| Protocol| Source|
+|-----|-------|------|
+|80 |tcp| 0.0.0.0/0|
+
+Continue to the next step: **Configure Routing**. For this initial setup, we're just adding a dummy health check on /. We'll add specific health checks for our service endpoints when we register them with the ALB.
+
+![img4]
+
+[img4]:https://github.com/tohwsw/aws-ecs-workshop/blob/master/Lab2-Create-Service-with-FarGate/img/2-LoadBalancer4.png
+
+Click through the "Next:Register targets" step, and continue to the **Review** step. If your values look correct, click **Create**.
+
+**Internal ALB**
+
+We create another internal Application Load Balancer [ALB](https://aws.amazon.com/elasticloadbalancing/applicationloadbalancer/) to route traffic the ColorTeller endpoints.
+
+To create the ALB, navigate to the [EC2 Console](https://console.aws.amazon.com/ec2/v2/home?#LoadBalancers:sort=loadBalancerName), and select **Load Balancers** from the left-hand menu. Choose **Create Load Balancer**. Create an Application Load Balancer:
+
+![img111]
+
+[img111]:https://github.com/tohwsw/aws-ecs-workshop/blob/master/Lab2-Create-Service-with-FarGate/img/2-LoadBalancer.png
+
+Name your ALB **EcsLabAlbInternal** and add an HTTP listener on port 80:
+
+![img222]
+
+[img222]:https://github.com/tohwsw/aws-ecs-workshop/blob/master/Lab2-Create-Service-with-FarGate/img/ecslabalbinternal.png
+
+Next, select your VPC and we need at least two subnets for high availability. Make sure to choose the VPC that was used in Lab 1.
+
+![img333]
+
+[img333]:https://github.com/tohwsw/aws-ecs-workshop/blob/master/Lab2-Create-Service-with-FarGate/img/albaz.png
+
+Click **Next**, and choose **sgecslabloadbalancer** security group.
+
+Continue to the next step: **Configure Routing**. For this initial setup, we're just adding a dummy health check on /. We'll add specific health checks for our service endpoints when we register them with the ALB.
+
+![img444]
+
+[img444]:https://github.com/tohwsw/aws-ecs-workshop/blob/master/Lab2-Create-Service-with-FarGate/img/ecslabalbinternalrouting.png
+
+Click through the "Next:Register targets" step, and continue to the **Review** step. If your values look correct, click **Create**.
+
+
+## 8. Set up IAM service roles
+
+
+Because you will be using AWS CodeDeploy to handle the deployments of your application to Amazon ECS, AWS CodeDeploy needs permissions to call Amazon ECS APIs, modify your load balancers, invoke Lambda functions, and describe CloudWatch alarms. Before you create an Amazon ECS service that uses the blue/green deployment type, you must create the AWS CodeDeploy IAM role (**ecsCodeDeployRole**).
+
+To create an IAM role for AWS CodeDeploy
+
+1.  Open the IAM console at [https://console.aws.amazon.com/iam/](https://console.aws.amazon.com/iam/).
+    
+2.  In the navigation pane, choose **Roles**, **Create role**.
+    
+3.  For Select type of trusted entity section, choose **AWS service.**
+    
+4.  For Choose the service that will use this role, choose **CodeDeploy**.
+    
+5.  For Select your use case, choose **CodeDeploy**, Next: **Permissions**.
+    
+6.  Choose **Next: Tags**.
+    
+7.  For Add tags (optional), you can add optional IAM tags to the role. Choose **Next:Review** when finished.
+    
+8.  For Role name, type **ecsCodeDeployRole**, enter an optional description, and then choose **Create role**.
+
+9. Click in the **ecsCodeDeployRole** to view it's properties. 
+ 
+10. In the Permissions policies section
+-   Choose Attach policies.
+    
+-   To narrow the available policies to attach, for Filter, type **AWSCodeDeployRoleForECS**
+    
+-   Check the box to the left of the AWS managed policy and choose Attach policy.
+    
+-  Choose **Trust Relationships**, Edit **trust relationship**.
+    
+
+4  Verify that the trust relationship contains the following policy. If the trust relationship matches the policy below, choose Cancel. If the trust relationship does not match, copy the policy into the Policy Document window and choose **Update Trust Policy**.
+
+```   
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "",
+      "Effect": "Allow",
+      "Principal": {
+        "Service": [
+          "codedeploy.amazonaws.com"
+        ]
+      },
+      "Action": "sts:AssumeRole"
+    }
+  ]
+}
+```
+
+5  Since the tasks in your Amazon ECS service using the blue/green deployment type require the use of the task execution role or a task role override, then you must add the **iam:PassRole** permission for each task execution role or task role override to the AWS CodeDeploy IAM role as an inline policy.
+
+Follow the substeps below to create an inline policy.
+    
+-  Open the IAM console at [https://console.aws.amazon.com/iam/](https://console.aws.amazon.com/iam/).
+    
+-  Search the list of roles for **ecsCodeDeployRole**.
+    
+-  In the Permissions policies section, choose **Add inline policy**.
+    
+-  Choose the JSON tab and add the following policy text. Specify the full ARN of your task execution role or task role override.
+
+   
 ```
 {
-  "executionRoleArn": "arn:aws:iam::284245693010:role/ecsTaskExecutionRole",
-  "containerDefinitions": [
+  "Version": "2012-10-17",
+  "Statement": [
     {
-      "environment": [
-        {
-          "name": "COLOR",
-          "value": "green"
-        }
-      ],
-      "name": "colorteller",
-      "image": "284245693010.dkr.ecr.ap-southeast-1.amazonaws.com/colorteller:latest",
-      "logConfiguration": {
-        "logDriver": "awslogs",
-        "options": {
-          "awslogs-group": "/ecs/fargate",
-          "awslogs-region": "ap-southeast-1",
-          "awslogs-stream-prefix": "colorteller"
-        }
-      },
-      "memory": 512,
-      "cpu": 256,
-      "essential": true,
-      "portMappings": [
-        {
-          "containerPort": 8080,
-          "hostPort": 8080
-        }
+      "Effect": "Allow",
+      "Action": "iam:PassRole",
+      "Resource": [
+        "arn:aws:iam::<aws_account_id>:role/<ecsTaskExecutionRole_or_TaskRole_name>"
       ]
     }
-  ],
-  "family": "colorteller_fargate_task",
-  "memory": "512",
-  "cpu": "256",
-  "networkMode": "awsvpc",
-  "requiresCompatibilities": [
-    "FARGATE"
   ]
 }
 
 ```
 
-Next register the task definitions with ECS. Make sure to run the command in the folder container **colorteller2.json**.
+6  Choose Review policy
+    
+7  For Name, type **ecsTaskExecutionPolicy** name for the added policy and then choose **Create policy**.
+The **ecsCodeDeployRole** should look like the below.
 
+![img111]
+
+[img111]: https://github.com/tohwsw/aws-ecs-workshop/blob/master/Lab3-BlueGreen-Deployment-with-CodeDeploy/img/3-IAMrole.png
+
+## 9. Create the ColorTeller Service
+
+After you have registered a task for your account, you can create a service for the registered task in your cluster. For this example, we will create a service.
+
+Open the ECS dashboard
+
+Choose the colorteller web Task Definition you created in the previous section. Choose Actions -> Create Service.
+
+![img5]
+
+[img5]:https://github.com/tohwsw/aws-ecs-workshop/blob/master/Lab2-Create-Service-with-FarGate/img/2-colorteller.png
+
+Configure the service to be Fargate as follows:
+
+![img6]
+
+[img6]:https://github.com/tohwsw/aws-ecs-workshop/blob/master/Lab2-Create-Service-with-FarGate/img/2-colorteller2.png
+
+![img666]
+
+[img666]:https://github.com/tohwsw/aws-ecs-workshop/blob/master/Lab2-Create-Service-with-FarGate/img/2-wordpress3.png
+
+Next configure the network by selecting the VPC and the 2 subnets.
+
+![img7]
+
+[img7]:https://github.com/tohwsw/aws-ecs-workshop/blob/master/Lab2-Create-Service-with-FarGate/img/2-colorteller3.png
+
+Click on the colort--XXX security group to add a new rule for colorteller at port 8080.
+
+![img8]
+
+[img8]:https://github.com/tohwsw/aws-ecs-workshop/blob/master/Lab2-Create-Service-with-FarGate/img/2-colorteller4.png
+
+Choose the Load Balancing option as **Application Load Balancer** For Load Balancer name, choose **EcsLabAlbInternal**. Click Add to load balancer.
+
+![img17]
+
+[img17]:https://github.com/tohwsw/aws-ecs-workshop/blob/master/Lab2-Create-Service-with-FarGate/img/colortelleralb.png
+
+![img18]
+
+[img18]:https://github.com/tohwsw/aws-ecs-workshop/blob/master/Lab2-Create-Service-with-FarGate/img/colortelleralb2.png
+
+![img19]
+
+[img19]:https://github.com/tohwsw/aws-ecs-workshop/blob/master/Lab2-Create-Service-with-FarGate/img/colortelleralb3.png
+
+
+On the Service Discovery section, enter the namespace as **ecslab**.
+
+![img9]
+
+[img9]:https://github.com/tohwsw/aws-ecs-workshop/blob/master/Lab2-Create-Service-with-FarGate/img/2-colorteller5.png
+
+Leave the Auto Scaling as **None**. Click Next Step.
+
+![img10]
+
+[img10]:https://github.com/tohwsw/aws-ecs-workshop/blob/master/Lab2-Create-Service-with-FarGate/img/2-mysql6.png
+
+On the review page, click Create Service.
+
+**Note**: If the service creation fails the first time, it could be due to the latency in creating the hosted zone on Route53. Retry the service creation by going back to the previous screens and redoing the steps again.
+
+Make sure that the service come up and running.
+Go to [CloudWatch Console](https://console.aws.amazon.com/cloudwatch/home) to view the logs
+
+![img11]
+
+[img11]:https://github.com/tohwsw/aws-ecs-workshop/blob/master/Lab2-Create-Service-with-FarGate/img/2-colorteller7.png
+
+Go to [Route53 Console](https://console.aws.amazon.com/route53/home) to view the **colorteller-service.ecslab** entry in the private DNS host.
+
+![img12]
+
+[img12]:https://github.com/tohwsw/aws-ecs-workshop/blob/master/Lab2-Create-Service-with-FarGate/img/2-route53.png
+
+## 10. Create the ColorGateway Service
+
+We will use the Task Definition created earlier to create the ECS service.
+Choose the ColorGateway Task Definition you created in the previous section. Choose Actions > Create Service.
+
+![img13]
+
+[img13]:https://github.com/tohwsw/aws-ecs-workshop/blob/master/Lab2-Create-Service-with-FarGate/img/2-colorgw.png
+
+Configure the service to be Fargate as follows:
+
+![img14]
+
+[img14]:https://github.com/tohwsw/aws-ecs-workshop/blob/master/Lab2-Create-Service-with-FarGate/img/2-colorgw2.png
+
+![img15]
+
+[img15]:https://github.com/tohwsw/aws-ecs-workshop/blob/master/Lab2-Create-Service-with-FarGate/img/2-wordpress3.png
+
+Next configure the network by selecting the VPC and the 2 subnets.
+
+![img16]
+
+[img16]:https://github.com/tohwsw/aws-ecs-workshop/blob/master/Lab2-Create-Service-with-FarGate/img/2-colorgw4.png
+
+Add 8080 to the colorg-XXX security group.
+
+![img166]
+
+[img166]:https://github.com/tohwsw/aws-ecs-workshop/blob/master/Lab2-Create-Service-with-FarGate/img/2-colorgw41.png
+
+Choose the Load Balancing option as **Application Load Balancer** For Load Balancer name, choose **EcsLabAlb**. Click Add to load balancer.
+
+![img17]
+
+[img17]:https://github.com/tohwsw/aws-ecs-workshop/blob/master/Lab2-Create-Service-with-FarGate/img/2-colorgw5.png
+
+![img18]
+
+[img18]:https://github.com/tohwsw/aws-ecs-workshop/blob/master/Lab2-Create-Service-with-FarGate/img/2-colorgw6.png
+
+![img19]
+
+[img19]:https://github.com/tohwsw/aws-ecs-workshop/blob/master/Lab2-Create-Service-with-FarGate/img/2-colorgw7.png
+
+On the Service Discovery section, uncheck the option. Click **Next Step**.
+
+![img20]
+
+[img20]:https://github.com/tohwsw/aws-ecs-workshop/blob/master/Lab2-Create-Service-with-FarGate/img/2-wordpress8.png
+
+Leave the Auto Scaling as **None**. Click **Next Step**.
+
+![img21]
+
+[img21]:https://github.com/tohwsw/aws-ecs-workshop/blob/master/Lab2-Create-Service-with-FarGate/img/2-wordpress9.png
+
+On the review page, click **Create Service**.
+
+
+Make sure that the service come up and running.
+
+Go to [CloudWatch Console](https://console.aws.amazon.com/cloudwatch/home) to view the logs under the log group **/ecs/fargate**
+
+![img22]
+
+[img22]:https://github.com/tohwsw/aws-ecs-workshop/blob/master/Lab2-Create-Service-with-FarGate/img/2-colorgw10.png
+
+
+## 11. Testing our service deployments from the console and the ALB
   
 
-    $aws ecs register-task-definition --cli-input-json file://colorteller2.json
+We can also test from the ALB itself. To find the DNS A record for your ALB, navigate to the EC2 Console -> **Load Balancers** -> **Select your Load Balancer**. Under **Description**, you can find details about your ALB, including a section for **DNS Name**. You can enter this value in your browser, and append the endpoint of your service, to see your ALB and ECS Cluster in action.You should be able to see the following output in the browser. For example http://ecslabalb-1194182192.ap-southeast-1.elb.amazonaws.com/color
 
+```
+{"color":"blue", "stats": {"blue":1}}
+```
 
+## That's a wrap!
 
-## 13. Trigger a CodeDeploy blue/green deployment
-
-
-You now need to update your Amazon ECS service to use the latest revision of your task definition. This will trigger a CodeDeploy blue/green deployment.
-
-1.  Open the Amazon ECS console at [https://console.aws.amazon.com/ecs/](https://console.aws.amazon.com/ecs/).
-    
-2.  Choose the Amazon ECS cluster where you’ve deployed your Amazon ECS service.
-    
-3.  Select the check box next to your **colorteller-service** service.
-    
-4.  Choose **Update** to open the **Update Service** wizard.
-    
-    1.  Under **Configure service**, for **Task Definition**, choose **2 (latest)** from the **Revision** drop-down list.
-        
-5.  Choose **Next step**.
-6.  Skip **Configure deployments**. Choose **Next step**.
-    
-7.  Skip **Configure network**. Choose **Next step**.
-    
-8.  Skip **Set Auto Scaling (optional)**. Choose **Next step**.
-    
-9.  Review the changes, and then choose **Update Service**.
-    
-10.  Choose **View Service**.
-
-You are now be taken to the Deployments tab of your service where you can see details about your blue/green deployment.
-
-You can click the deployment ID to go to the details view for the CodeDeploy deployment.
-
-From there you can see the deployments status:
-
-![img3]
-
-[img3]: https://github.com/tohwsw/awsecslab/blob/master/Lab23-BlueGreen-Deployment-with-CodeDeploy/img/3-deployment2.png
-
-If you notice issues, you can stop and roll back the deployment. This shifts traffic back to the original (blue) task set and stops the deployment.
-
-By default, CodeDeploy waits one hour after a successful deployment before it terminates the original task set. You can use the AWS CodeDeploy console to shorten this interval. After the task set is terminated, CodeDeploy marks the deployment complete.
-
-Congrats! You have achieved blue-green deployment with ECS service.
-
-## Post Lab Questions
-
-- Would you be able to ssh into the container instance using Fargate mode?
-
-- How would you promote the same container image across different environments (or ECS clusters). How do you externalize the variables(such as database DNS) in each of the environment?
-
-- What are the activities that you put in a container DevOps pipeline?
-
-- The MySQL password is stated in the clear in the Task Definition. How would you secure this?
-
-- If you stop and start the MySQL service in the lab, the table data will be lost. Why is that so? How do you persist the data in ECS?
-
-- Compare the time for deployment for a new application version for ECS vs Elastic Beanstalk. Which is faster? What is that so?
-
-- If you have 2 colorteller tasks (blue and green) running at the same time, how would you implement traffic control so that the blue task gets 80% of the traffic and the green gets 20%?
-
-## Lab Clean Up
-
-Below are the high level steps for executing the cleanup.
-
-Go to ECS console to delete **EcsLabPublicCluster**
-
-Go to CloudFormation console to delete the **ecsworkshopstack** stack.
-
-Remove the ecslab namespace in Cloud Map.
-
-Remove the roles created in IAM
-- ecslabinstanceprofile
-- ecstaskexecutionrole
-- ecsCodeDeployRole
-
-Delete the **sgecslabpubliccluster** security group
-
-Delete the code deploy application
-
-Delete the ALB **EcsAlbLab** and **EcsAlbLabInternal** and the target groups.
-
+Congratulations! You've deployed an ECS Cluster with a microservice application!
 
 > Written with [StackEdit](https://stackedit.io/).
-
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTUwNDE0NTY1MSwxNjYwODQ4NzEwLDE4MT
-MwMTMyNCwxNzAxNzA0MzY1LDczMDk5ODExNl19
+eyJoaXN0b3J5IjpbMTM5ODQ5ODE0MywtNDQ3NjEwNzQ3LDE0Mj
+UwODg2NjAsMTIxODQ5MTY1LDE3NTIzODQyNDMsNzMwOTk4MTE2
+XX0=
 -->
