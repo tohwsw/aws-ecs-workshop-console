@@ -203,17 +203,17 @@ Click on the colort--XXX security group to add a new rule for colorteller at por
 
 Choose the Load Balancing option as **Application Load Balancer** For Load Balancer name, choose **EcsLabAlbInternal**. Click Add to load balancer.
 
-![img17]
+![img81]
 
-[img17]:https://github.com/tohwsw/aws-ecs-workshop/blob/master/Lab2-Create-Service-with-FarGate/img/colortelleralb.png
+[img81]:https://github.com/tohwsw/aws-ecs-workshop/blob/master/Lab2-Create-Service-with-FarGate/img/colortelleralb.png
 
-![img18]
+![img82]
 
-[img18]:https://github.com/tohwsw/aws-ecs-workshop/blob/master/Lab2-Create-Service-with-FarGate/img/colortelleralb2.png
+[img82]:https://github.com/tohwsw/aws-ecs-workshop/blob/master/Lab2-Create-Service-with-FarGate/img/colortelleralb2.png
 
-![img19]
+![img83]
 
-[img19]:https://github.com/tohwsw/aws-ecs-workshop/blob/master/Lab2-Create-Service-with-FarGate/img/colortelleralb3.png
+[img83]:https://github.com/tohwsw/aws-ecs-workshop/blob/master/Lab2-Create-Service-with-FarGate/img/colortelleralb3.png
 
 
 On the Service Discovery section, enter the namespace as **ecslab**.
