@@ -109,7 +109,7 @@ Retrieve the login command to use to authenticate your Docker client to your reg
 $(aws ecr get-login --no-include-email --region ap-southeast-1)
 ```
 
-Go to the folder examples/apps/colorapp/src/colorteller. Execute a docker build with the respective repository uri for colorteller and push it to the repository.
+Go to the folder examples/apps/colorapp/src/colorteller. Execute a docker build with the respective repository uri for colorteller and push it to the repository. Please change the account id to your own.
 
 ```
 cd ~/environment/aws-app-mesh-examples/examples/apps/colorapp/src/colorteller
@@ -119,7 +119,7 @@ docker build -t 284245693010.dkr.ecr.ap-southeast-1.amazonaws.com/colorteller .
 docker push 284245693010.dkr.ecr.ap-southeast-1.amazonaws.com/colorteller:latest
 ```
 
-Go to the folder examples/apps/colorapp/src/gateway. Execute a docker build with the respective repository uri for colorgateway and push it to the repository.
+Go to the folder examples/apps/colorapp/src/gateway. Execute a docker build with the respective repository uri for colorgateway and push it to the repository. Please change the account id 284245693010 to your own.
 
 ```
 cd ~/environment/aws-app-mesh-examples/examples/apps/colorapp/src/gateway
@@ -158,7 +158,7 @@ Name the role **ecsTaskExecutionRole**
 ## 6. Create the Task Definitions
 
 On your laptop, we will use the AWS CLI to create ECS task definitions.
-Copy the content below and save it as **colorgateway.json**. Make sure to change the arn **arn:aws:iam::284245693010:role/ecsTaskExecutionRole** of **ecsTaskExecutionRole** to your own.
+Copy the content below and save it as **colorgateway.json**. Make sure to change replace the account id 284245693010 with your own.
 
 ```
     {
@@ -207,7 +207,7 @@ Copy the content below and save it as **colorgateway.json**. Make sure to change
 }
 ```
     
-Next create **colorteller.json** with the below content. Notice that the environment variable "color" is "blue". Make sure to change the arn **arn:aws:iam::284245693010:role/ecsTaskExecutionRole** of **ecsTaskExecutionRole** to your own.
+Next create **colorteller.json** with the below content. Notice that the environment variable "color" is "blue". Make sure to change the account id 284245693010 to your own.
 
 
 ```
