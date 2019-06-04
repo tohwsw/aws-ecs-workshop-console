@@ -163,9 +163,9 @@ Follow the substeps below to create an inline policy.
 7  For Name, type **ecsTaskExecutionPolicy** name for the added policy and then choose **Create policy**.
 The **ecsCodeDeployRole** should look like the below.
 
-![img111]
+![img1111]
 
-[img111]: https://github.com/tohwsw/aws-ecs-workshop/blob/master/Lab3-BlueGreen-Deployment-with-CodeDeploy/img/3-IAMrole.png
+[img1111]: https://github.com/tohwsw/aws-ecs-workshop/blob/master/Lab3-BlueGreen-Deployment-with-CodeDeploy/img/3-IAMrole.png
 
 ## 9. Create the ColorTeller Service
 
