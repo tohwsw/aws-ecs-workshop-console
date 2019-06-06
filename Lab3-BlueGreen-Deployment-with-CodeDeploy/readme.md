@@ -10,7 +10,7 @@ With this new capability, you can create a new service in AWS Fargate or Amazon 
 
 On your laptop, we will use the AWS CLI to create a new task definition for colorteller. This updates the colorteller image to output the color "green".
 
-Copy the content below and save it as **colorteller2.json**. Make sure to change the arn **arn:aws:iam::284245693010:role/ecsTaskExecutionRole** of **ecsTaskExecutionRole** to your own. The arn can be found in the role on the IAM console.
+Copy the content below and save it as **colorteller2.json**. Make sure to change account id 284245693010 to your own.
 
 ```
 {
