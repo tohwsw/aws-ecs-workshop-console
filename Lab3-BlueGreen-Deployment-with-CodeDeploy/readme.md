@@ -59,7 +59,7 @@ Next register the task definitions with ECS. Make sure to run the command in the
 
   
 
-    $aws ecs register-task-definition --cli-input-json file://colorteller2.json
+    aws ecs register-task-definition --cli-input-json file://colorteller2.json
 
 
 
@@ -105,21 +105,6 @@ By default, CodeDeploy waits one hour after a successful deployment before it te
 
 Congrats! You have achieved blue-green deployment with ECS service.
 
-## Post Lab Questions
-
-- Would you be able to ssh into the container instance using Fargate mode?
-
-- How would you promote the same container image across different environments (or ECS clusters). How do you externalize the variables(such as database DNS) in each of the environment?
-
-- What are the activities that you put in a container DevOps pipeline?
-
-- The MySQL password is stated in the clear in the Task Definition. How would you secure this?
-
-- If you stop and start the MySQL service in the lab, the table data will be lost. Why is that so? How do you persist the data in ECS?
-
-- Compare the time for deployment for a new application version for ECS vs Elastic Beanstalk. Which is faster? What is that so?
-
-- If you have 2 colorteller tasks (blue and green) running at the same time, how would you implement traffic control so that the blue task gets 80% of the traffic and the green gets 20%?
 
 ## Lab Clean Up
 
