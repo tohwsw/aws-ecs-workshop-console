@@ -6,24 +6,6 @@
 ## 1. Setting up the VPC
 
 We will create a new VPC for our entire infrastructure. We need 2 public subnets for ECS cluster and the ALB.
-Configure a VPC with the following requirements via the CloudFormation script given:
-
-| VPC  |  |
-| ------------- | ------------- |
-| Name Tag  | ECS Lab VPC  |
-| CIDR  | 10.0.0.0/16  |
-
-| subnet a  |   |
-| ------------- | ------------- |
-| Name tag  | Public subnet a |
-| CIDR  | 10.0.0.0/24  |
-
-| subnet b  |   |
-| ------------- | ------------- |
-| Name tag  | Public subnet b |
-| CIDR  | 10.0.1.0/24  |
-
-
 
 You can create this with the CloudFormation script using the following link.
 
@@ -66,7 +48,7 @@ In the next screen, configure the cluster as follows:
 | Cluster Name  | EcsLabPublicCluster  |
 | Provisioning Model  | On-Demand Instance  |
 | EC2 instance type  | t2.micro  |
-| Number of instances  | 2  |
+| Number of instances  | 0  |
 | EBS storage  | 22  |
 | Keypair  | none  |
 
@@ -109,7 +91,13 @@ Retrieve the login command to use to authenticate your Docker client to your reg
 $(aws ecr get-login --no-include-email --region ap-southeast-1)
 ```
 
-Go to the folder examples/apps/colorapp/src/colorteller. Execute a docker build with the respective repository uri for colorteller and push it to the repository. Please change the account id to your own.
+Note down your account id via the following command.
+
+```
+aws sts get-caller-identity
+```
+
+Go to the folder examples/apps/colorapp/src/colorteller. Execute a docker build with the respective repository uri for colorteller and push it to the repository. Please change the account id 284245693010 to your own. 
 
 ```
 cd ~/environment/aws-app-mesh-examples/examples/apps/colorapp/src/colorteller
@@ -254,11 +242,11 @@ Next create **colorteller.json** with the below content. Notice that the environ
 
 Next register the task definitions with ECS. You have to run the commands in the folder containing colorteller.json and colorgateway.json
 
-    $aws ecs register-task-definition --cli-input-json file://colorgateway.json
+    aws ecs register-task-definition --cli-input-json file://colorgateway.json
     
-    $aws ecs register-task-definition --cli-input-json file://colorteller.json
+    aws ecs register-task-definition --cli-input-json file://colorteller.json
     
-    $aws ecs list-task-definitions
+    aws ecs list-task-definitions
 
 Next, create the CloudWatch log group **/ecs/fargate**. Go to [CloudWatch Console](https://console.aws.amazon.com/cloudwatch). 
 
