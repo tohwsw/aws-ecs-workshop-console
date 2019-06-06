@@ -110,9 +110,11 @@ Congrats! You have achieved blue-green deployment with ECS service.
 
 Below are the high level steps for executing the cleanup.
 
+Go to ECS console to stop all running tasks and remove services.
+
 Go to ECS console to delete **EcsLabPublicCluster**
 
-Go to CloudFormation console to delete the **ecsworkshopstack** stack.
+Go to CloudFormation console to delete the **ecsworkshopstack** stack. This removes the VPC created.
 
 Remove the ecslab namespace in Cloud Map.
 
