@@ -14,58 +14,20 @@ Region| Launch
 Asia Pacific (Singapore) | [![cfn](http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/images/cloudformation-launch-stack-button.png)](https://console.aws.amazon.com/cloudformation/home?region=ap-southeast-1#/stacks/new?stackName=ecsworkshopstack&templateURL=https://s3-ap-southeast-1.amazonaws.com/weitoh/containerworkshop/vpcwizard.json)
 
 
-
-
-## 2. Setting up the IAM user and roles
-
-In order to work with ECS, we will need the appropriate permissions for our ECS cluster. Go to the [IAM Console](https://console.aws.amazon.com/iam/home), Roles -> Create New Role -> AWS Service -> EC2.
-In the Create Role screen, enter **AmazonEC2ContainerServiceforEC2Role** **AmazonEC2ContainerServiceAutoscaleRole** in the text field (without a comma) and select the two policies.
-
-![img2]
-
-[img2]:https://github.com/tohwsw/aws-ecs-workshop/blob/master/Lab1-Getting-Started-with-ECS/img/1-ecslabinstanceprofile1.png
-
-In the Review screen, enter **ecslabinstanceprofile** for the Role name and click **Create Role**.
-
-![img3]
-
-[img3]:https://github.com/tohwsw/aws-ecs-workshop/blob/master/Lab1-Getting-Started-with-ECS/img/1-ecsinstanceprofile2.png
-
-**Note**: By default, the ECS first run wizard creates **ecsInstanceRole** for you to use. However, it's a best practice to create a specific role for your use so that we can add more policies in the future when we need to.
-
-## 3. Launching the Cluster
+## 2. Launching the Cluster
 
 Next, let’s launch the ECS cluster which will host our container instances. We're going to put these instances in the public subnets since they're going to be hosting public microservices.
 
 Create a new security group by navigating to the EC2 console -> Security Group and create **sgecslabpubliccluster**. Keep the defaults. Make sure the correct VPC is selected when creating the security group.
 
-Navigate to the [ECS console](https://console.aws.amazon.com/ecs/) and click Create Cluster. Choose the **EC2 Linux + Networking** cluster template. Click **Next Step**.
+Navigate to the [ECS console](https://console.aws.amazon.com/ecs/) and click Create Cluster. Choose the **Networking only** cluster template. Click **Next Step**.
 
-In the next screen, configure the cluster as follows:
+Name the cluster **EcsLabPublicCluster**.
 
-| Field Name  | Value |
-| ------------- | ------------- |
-| Cluster Name  | EcsLabPublicCluster  |
-| Provisioning Model  | On-Demand Instance  |
-| EC2 instance type  | t2.micro  |
-| Number of instances  | 0  |
-| EBS storage  | 22  |
-| Keypair  | none  |
-
-![img4]
-
-[img4]:https://github.com/tohwsw/aws-ecs-workshop/blob/master/Lab1-Getting-Started-with-ECS/img/1-ecslabpubliccluster.png
-
-![img5]
-
-[img5]:https://github.com/tohwsw/aws-ecs-workshop/blob/master/Lab1-Getting-Started-with-ECS/img/1-ecslabpubliccluster2.png
-
-Click Create. It will take a few minutes to create the cluster.
+Click Create.
 
 
-
-
-## 4. Using Cloud9 to build and push Docker Images to ECR
+## 3. Using Cloud9 to build and push Docker Images to ECR
 
 Please bring up a Cloud9 instance by going to https://ap-southeast-1.console.aws.amazon.com/cloud9/home/product. Cloud9 will provide you terminal access to run AWS CLI.
 
@@ -119,7 +81,7 @@ docker push 284245693010.dkr.ecr.ap-southeast-1.amazonaws.com/colorgateway:lates
 
 
 
-## 5. Create the Task Execution IAM role
+## 4. Create the Task Execution IAM role
 
 Amazon ECS needs permissions so that your Fargate task can store logs in CloudWatch. This permission is covered by the task execution IAM role.
 
@@ -143,7 +105,7 @@ Next click on **Permissions** and then select **AmazonECSTaskExecutionRolePolicy
 
 Name the role **ecsTaskExecutionRole**
 
-## 6. Create the Task Definitions
+## 5. Create the Task Definitions
 
 On your laptop, we will use the AWS CLI to create ECS task definitions.
 Copy the content below and save it as **colorgateway.json**. Make sure to change replace the account id 284245693010 with your own.
@@ -260,7 +222,7 @@ Give the log group name **/ecs/fargate**
 
 [img9]:https://github.com/tohwsw/aws-ecs-workshop/blob/master/Lab1-Getting-Started-with-ECS/img/1-cloudwatch2.png
 
-## That's a wrap!
+## 6. That's a wrap!
 
 You have now created the ECS cluster and the task definitions. You can proceed to lab 2 where the tasks will be run as ECS services.
 
