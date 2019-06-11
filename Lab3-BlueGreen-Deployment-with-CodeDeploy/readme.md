@@ -75,19 +75,20 @@ You now need to update your Amazon ECS service to use the latest revision of you
 3.  Select the check box next to your **colorteller-service** service.
     
 4.  Choose **Update** to open the **Update Service** wizard.
-    
-    1.  Under **Configure service**, for **Task Definition**, choose **2 (latest)** from the **Revision** drop-down list.
+
+5.  Under **Configure service**, for **Task Definition**, choose **2 (latest)** from the **Revision** drop-down list.
         
-5.  Choose **Next step**.
-6.  Skip **Configure deployments**. Choose **Next step**.
+6.  Choose **Next step**.
+
+7.  Skip **Configure deployments**. Choose **Next step**.
     
-7.  Skip **Configure network**. Choose **Next step**.
+8.  Skip **Configure network**. Choose **Next step**.
     
-8.  Skip **Set Auto Scaling (optional)**. Choose **Next step**.
+9.  Skip **Set Auto Scaling (optional)**. Choose **Next step**.
     
-9.  Review the changes, and then choose **Update Service**.
+10.  Review the changes, and then choose **Update Service**.
     
-10.  Choose **View Service**.
+11.  Choose **View Service**.
 
 You are now be taken to the Deployments tab of your service where you can see details about your blue/green deployment.
 
@@ -119,11 +120,8 @@ Go to CloudFormation console to delete the **ecsworkshopstack** stack. This remo
 Remove the ecslab namespace in Cloud Map.
 
 Remove the roles created in IAM
-- ecslabinstanceprofile
 - ecstaskexecutionrole
 - ecsCodeDeployRole
-
-Delete the **sgecslabpubliccluster** security group
 
 Delete the code deploy application
 
