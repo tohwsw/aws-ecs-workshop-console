@@ -18,7 +18,6 @@ Asia Pacific (Singapore) | [![cfn](http://docs.aws.amazon.com/AWSCloudFormation/
 
 Next, let’s launch the ECS cluster which will host our container instances. We're going to put these instances in the public subnets since they're going to be hosting public microservices.
 
-Create a new security group by navigating to the EC2 console -> Security Group and create **sgecslabpubliccluster**. Keep the defaults. Make sure the correct VPC is selected when creating the security group.
 
 Navigate to the [ECS console](https://console.aws.amazon.com/ecs/) and click Create Cluster. Choose the **Networking only** cluster template. Click **Next Step**.
 

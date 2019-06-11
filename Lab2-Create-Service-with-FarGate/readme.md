@@ -109,7 +109,7 @@ To create an IAM role for AWS CodeDeploy
 -  Choose **Trust Relationships**, Edit **trust relationship**.
     
 
-4  Verify that the trust relationship contains the following policy. If the trust relationship matches the policy below, choose Cancel. If the trust relationship does not match, copy the policy into the Policy Document window and choose **Update Trust Policy**.
+Verify that the trust relationship contains the following policy. If the trust relationship matches the policy below, choose Cancel. If the trust relationship does not match, copy the policy into the Policy Document window and choose **Update Trust Policy**.
 
 ```   
 {
@@ -129,7 +129,7 @@ To create an IAM role for AWS CodeDeploy
 }
 ```
 
-5  Since the tasks in your Amazon ECS service using the blue/green deployment type require the use of the task execution role or a task role override, then you must add the **iam:PassRole** permission for each task execution role or task role override to the AWS CodeDeploy IAM role as an inline policy.
+Since the tasks in your Amazon ECS service using the blue/green deployment type require the use of the task execution role or a task role override, then you must add the **iam:PassRole** permission for each task execution role or task role override to the AWS CodeDeploy IAM role as an inline policy.
 
 Follow the substeps below to create an inline policy.
     
@@ -158,9 +158,9 @@ Follow the substeps below to create an inline policy.
 
 ```
 
-6  Choose Review policy
+Choose Review policy
     
-7  For Name, type **ecsTaskExecutionPolicy** name for the added policy and then choose **Create policy**.
+For Name, type **ecsTaskExecutionPolicy** name for the added policy and then choose **Create policy**.
 The **ecsCodeDeployRole** should look like the below.
 
 ![img1111]
